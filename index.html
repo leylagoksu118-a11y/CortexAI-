@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cortex AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f6;--panel:#f7f8fb;--card:#fff;--ink:#14213d;--mute:#667089;--line:#d9deea;--accent:#4b3fd1;--accent-ink:#fff;--ubub:#e3e6f6;--code:#101a33;--codeink:#e6eaf7;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1424;--panel:#131b30;--card:#18213a;--ink:#e8ecf8;--mute:#939bb5;--line:#27314d;--accent:#8c82ff;--accent-ink:#0e1424;--ubub:#222c4a;--code:#0a1020;--codeink:#e6eaf7;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1424;--panel:#131b30;--card:#18213a;--ink:#e8ecf8;--mute:#939bb5;--line:#27314d;--accent:#8c82ff;--accent-ink:#0e1424;--ubub:#222c4a;--code:#0a1020;--codeink:#e6eaf7;color-scheme:dark}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 "Instrument Sans",system-ui,sans-serif;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.app{display:flex;height:100%}
+aside{width:272px;flex:none;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:16px 12px;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;font:700 20px Sora,sans-serif;padding:4px 8px 12px}
+.brand svg{width:28px;height:28px;color:var(--accent)}
+.newchat{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-weight:500}
+.newchat:hover{border-color:var(--accent)}
+.hist{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.hist h4{margin:10px 10px 4px;font:500 13px "Instrument Sans";color:var(--mute)}
+.hrow{display:flex;align-items:center;border-radius:8px}
+.hrow:hover,.hrow.on{background:var(--ubub)}
+.hrow .t{flex:1;min-width:0;text-align:left;padding:8px 10px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hrow:hover .t,.hrow.on .t{color:var(--ink)}
+.hrow .x{flex:none;min-width:34px;height:34px;padding:0 6px;border-radius:8px;color:var(--mute);font-size:14px}
+.hrow .x:hover,.hrow .x.arm{color:#c2392b}
+.theme{align-self:flex-start;padding:8px 10px;color:var(--mute);border-radius:8px}
+.theme:hover{background:var(--ubub)}
+main{flex:1;min-width:0;display:flex;flex-direction:column;position:relative}
+header{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);background:var(--bg)}
+header .menu{width:40px;height:40px;border-radius:10px;font-size:20px}
+header b{font:700 17px Sora,sans-serif}
+#feed{flex:1;overflow-y:auto;padding:24px 16px 8px}
+.col{max-width:760px;margin:0 auto;width:100%}
+.hero{text-align:center;padding:9vh 0 20px}
+.hero svg{width:56px;height:56px;color:var(--accent)}
+.hero h1{font:700 clamp(32px,6vw,48px)/1.1 Sora,sans-serif;margin:12px 0 8px;letter-spacing:-.02em}
+.hero p{color:var(--mute);margin:0 auto 22px;max-width:46ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chips button{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-size:14px}
+.chips button:hover{border-color:var(--accent)}
+.msg{display:flex;gap:10px;margin:0 0 18px}
+.msg.u{justify-content:flex-end}
+.msg.u .b{background:var(--ubub);padding:10px 14px;border-radius:16px 16px 4px 16px;max-width:85%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.a .av{width:30px;height:30px;flex:none;border-radius:9px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--accent)}
+.msg.a .av svg{width:18px;height:18px}
+.msg.a .b{min-width:0;flex:1;overflow-wrap:anywhere}
+.b p{margin:0 0 .7em}.b ul,.b ol{margin:0 0 .7em;padding-left:1.4em}.b li{margin:.2em 0}
+.b h2,.b h3{font:600 17px Sora,sans-serif;margin:1em 0 .4em}
+.b code{background:var(--ubub);padding:1px 6px;border-radius:6px;font:.88em ui-monospace,Menlo,Consolas,monospace}
+.codebox{margin:0 0 .8em;border-radius:12px;background:var(--code);color:var(--codeink);overflow:hidden}
+.codebox .top{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;font-size:12px;color:#9aa5c6;border-bottom:1px solid #ffffff1a}
+.codebox .top button{color:#c9d1ee;padding:2px 8px;border-radius:6px}
+.codebox .top button:hover{background:#ffffff1a}
+.codebox pre{margin:0;padding:12px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace}
+.codebox pre code{background:none;padding:0;font:inherit}
+.imgcard{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;max-width:520px}
+.imgcard img{display:block;width:100%;height:auto}
+.imgcard .bar{display:flex;justify-content:flex-end;padding:6px 8px;background:var(--card);border-top:1px solid var(--line)}
+.imgcard .bar button{padding:4px 10px;border-radius:8px;font-size:14px;color:var(--accent)}
+.dots{display:inline-flex;gap:4px;padding:8px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:bl 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none}}
+.err{color:#c2392b}
+.composer{padding:8px 16px 14px}
+.box{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px 10px 8px 14px;box-shadow:0 4px 18px #14213d14}
+.box:focus-within{border-color:var(--accent)}
+textarea{width:100%;border:0;background:none;color:inherit;font:inherit;resize:none;max-height:180px;min-height:28px;outline:0;padding:4px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.modes{display:flex;gap:4px;background:var(--bg);padding:3px;border-radius:999px}
+.modes button{padding:5px 12px;border-radius:999px;font-size:14px;color:var(--mute)}
+.modes button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 3px #14213d26}
+.send{width:38px;height:38px;border-radius:12px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.send:disabled{opacity:.4;cursor:default}
+.note{text-align:center;font-size:12px;color:var(--mute);margin:8px 0 0}
+.scrim{display:none}
+.row{flex-wrap:wrap}.tools{display:flex;gap:4px}.tools button{padding:5px 10px;border-radius:999px;font-size:14px;color:var(--mute)}.tools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.atts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.atts:empty{display:none}.chip2{background:var(--ubub);border-radius:999px;padding:2px 4px 2px 10px;font-size:13px}.chip2 button{padding:0 6px}
+.psel{margin:6px 0;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+.runout pre{margin:-6px 0 12px;padding:10px 12px;background:var(--ubub);border-radius:0 0 12px 12px;font:13px ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-x:auto}.runout img{max-width:100%;background:#fff;border-radius:10px;margin-bottom:12px}
+#memList div{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}#memList button{color:var(--mute)}
+.modal{position:fixed;inset:0;background:#0008;display:grid;place-items:center;z-index:50;padding:16px}.modal[hidden]{display:none}
+.mbox{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:420px;width:100%}
+.mbox h3{margin:0 0 6px;font:600 18px Sora,sans-serif}.mbox p{margin:0 0 12px;color:var(--mute);font-size:14px}
+.mbox select{margin-bottom:8px}.mbox input,.mbox select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit}
+.mrow{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.mrow button{padding:8px 14px;border-radius:10px}.mrow .pri{background:var(--accent);color:var(--accent-ink)}
+@media (max-width:820px){
+ aside{position:fixed;z-index:30;top:0;bottom:0;left:0;padding-top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-102%);transition:transform .2s;width:min(300px,86vw)}
+ body.open aside{transform:none}
+ body.open .scrim{display:block;position:fixed;inset:0;background:#0008;z-index:20}
+ header{display:flex}
+ #feed{padding:16px 12px 4px}.hero{padding-top:5vh}
+ .composer{padding:6px 10px 10px}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><symbol id="logo" viewBox="0 0 32 32"><path d="M24 8.5A11 11 0 1 0 24 23.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="16" r="3.2" fill="currentColor"/><path d="M19 16h9M16 19v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol></svg>
+<div class="app">
+<aside id="side">
+ <div class="brand"><svg><use href="#logo"/></svg>Cortex AI</div>
+ <button class="newchat" id="newBtn"><span aria-hidden="true">＋</span> Yeni sohbet</button>
+ <select id="personaSel" class="psel" aria-label="Rol"></select>
+ <button class="theme" id="memBtn">🧠 Hafıza</button>
+ <nav class="hist" id="hist" aria-label="Sohbet geçmişi"></nav>
+ <button class="theme" id="themeBtn">Temayı değiştir</button>
+</aside>
+<div class="scrim" id="scrim"></div>
+<main>
+ <header><button class="menu" id="menuBtn" aria-label="Menüyü aç">☰</button><b>Cortex AI</b></header>
+ <div id="feed"><div class="col" id="col"></div></div>
+ <div class="composer">
+  <div class="box">
+   <div id="atts" class="atts"></div>
+   <textarea id="inp" rows="1" placeholder="Cortex AI’ye bir şey sor…" aria-label="Mesaj"></textarea>
+   <div class="row">
+    <div class="tools"><button id="attBtn" aria-label="Dosya ekle">📎</button><button id="webBtn" aria-pressed="false" title="İnternette ara">🌐 Web</button></div><input type="file" id="fileInp" hidden multiple accept="image/*,.txt,.md,.csv,.json,.py,.js,.html,.css,.pdf"><div class="modes" role="group" aria-label="Mod"><button id="mChat" aria-pressed="true">Sohbet</button><button id="mImg" aria-pressed="false">Resim</button></div>
+    <button class="send" id="sendBtn" aria-label="Gönder" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+   </div>
+  </div>
+  <p class="note">Cortex AI hata yapabilir. Önemli bilgileri doğrula.</p>
+ </div>
+</main>
+</div>
+<div id="memModal" class="modal" hidden><div class="mbox" role="dialog" aria-label="Hafıza"><h3>Hafıza</h3><p>Cortex AI bunları her sohbette hatırlar. Sohbette “hatırla: …” yazarak da ekleyebilirsin.</p><div id="memList"></div><input id="memInp" placeholder="Yeni bilgi ekle ve Enter’a bas"><div class="mrow"><button id="memClose" class="pri">Kapat</button></div></div></div>
+<script>window.CORTEX_API="";/* Arayüz sunucudan ayrı bir yerdeyse (örn. Netlify) buraya sunucu adresini yaz: "https://senin-sunucun.onrender.com" */</script>
+<script>
+var $=function(i){return document.getElementById(i)};
+var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+var chats=[],cur=null,mode="chat",busy=false,sample=null,downloads=null;
+try{chats=JSON.parse(store.get("cortex-chats")||"[]")}catch(e){chats=[]}
+var SUG=["Python ile basit bir hesap makinesi yaz","Fotosentezi 5 maddede açıkla","Mutlu bir kedi resmi çiz","İş görüşmesine nasıl hazırlanırım?"];
+var SYS="Sen Cortex AI’sın, Türkçe konuşan yardımcı bir yapay zekâsın. Kullanıcı hangi dilde yazarsa o dilde yanıt ver. Doğru ve dürüst ol; emin değilsen bunu söyle, uydurma. Kod yazarken tam, çalışan kod ver ve ```dil biçiminde kod bloğu kullan. Kısa ve net yaz.";
+var _imgs=[],atts=[],webOn=false;
+var PERS={"Genel asistan":"","Kod ustası":"Deneyimli bir yazılım mühendisisin. Temiz, çalışan kod yaz ve kısaca açıkla.","Matematik hocası":"Sabırlı bir matematik hocasısın. Adım adım çöz.","Çevirmen":"Profesyonel bir çevirmensin. Metni istenen dile doğal ve akıcı çevir.","Yaratıcı yazar":"Yaratıcı bir yazarsın. Canlı ve özgün bir dille yaz."};
+var persona=store.get("cortex-persona")||"Genel asistan";
+function mems(){try{return JSON.parse(store.get("cortex-mem")||"[]")}catch(e){return[]}}
+function addMem(t){t=t.trim();if(!t)return;var m=mems();if(m.indexOf(t)<0)m.push(t.slice(0,300));store.set("cortex-mem",JSON.stringify(m.slice(-50)));memLabel()}
+function memLabel(){$("memBtn").textContent="🧠 Hafıza ("+mems().length+")"}
+function renderMem(){$("memList").innerHTML=mems().map(function(t,i){return "<div><span>"+esc(t)+'</span><button data-m="'+i+'" aria-label="Sil">✕</button></div>'}).join("")||'<p>Henüz bir şey yok.</p>'}
+function sysPrompt(){var s=SYS,p=persona==="Özel rol"?(store.get("cortex-custom")||""):(PERS[persona]||"");if(p)s+="\n\nRolün: "+p;var m=mems();if(m.length)s+="\n\nKullanıcı hakkında hatırladıkların:\n- "+m.join("\n- ");return s+"\n\nSayısal hesap gerekiyorsa kendin tahmin etme, Python kodu yaz (```python); kullanıcı kodu çalıştırabilir. Grafik için matplotlib kullan."}
+async function tool(path){var base=(window.CORTEX_API||"").replace(/\/$/,"");try{var r=await fetch(base+path),j=await r.json();return r.ok?j:{error:j.error||("HTTP "+r.status)}}catch(e){return {error:"Araç sunucusuna ulaşılamadı (Python sunucusu çalışmıyor olabilir)"}}}
+async function gatherWeb(text,on){
+ var urls=(text.match(/https?:\/\/[^\s)]+/g)||[]).slice(0,2),jobs=urls.map(function(u){return tool("/api/scrape?url="+encodeURIComponent(u)).then(function(j){return j.error?"\n[Sayfa okunamadı: "+u+" — "+j.error+"]":"\n[Sayfa: "+j.title+" — "+j.url+"]\n"+j.text})});
+ if(on){var q=encodeURIComponent(text.slice(0,200));
+  jobs.push(tool("/api/search?q="+q).then(function(j){return j.error?"\n[Web araması başarısız: "+j.error+"]":"\n[Web arama sonuçları]\n"+j.results.map(function(r,i){return (i+1)+". "+r.title+" — "+r.url+"\n"+r.snippet}).join("\n")}));
+  jobs.push(tool("/api/wiki?q="+q).then(function(j){return j.found?"\n[Vikipedi: "+j.title+" — "+j.url+"]\n"+j.text.slice(0,3000):""}))}
+ var o=(await Promise.all(jobs)).join("\n");
+ return o?"\n\n--- İnternetten alınan bilgiler ---"+o+"\n--- Bu bilgileri kullanarak cevap ver ve kaynak adreslerini belirt. ---":""}
+function renderAtts(){$("atts").innerHTML=atts.map(function(a,i){return '<span class="chip2">'+esc(a.name)+' <button data-rm="'+i+'" aria-label="Kaldır">✕</button></span>'}).join("")}
+async function readPdf(f){
+ if(!window.pdfjsLib){await new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"}
+ var d=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise,t="";
+ for(var p=1;p<=Math.min(d.numPages,30);p++){var pg=await d.getPage(p),c=await pg.getTextContent();t+=c.items.map(function(x){return x.str}).join(" ")+"\n"}
+ return t}
+function readFile(f){return new Promise(function(ok,no){
+ if(f.type.indexOf("image/")===0){var im=new Image();im.onload=function(){var k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok({name:f.name,type:"img",mime:"image/jpeg",b64:c.toDataURL("image/jpeg",.85).split(",")[1]})};im.onerror=no;im.src=URL.createObjectURL(f);return}
+ if(/\.pdf$/i.test(f.name)){readPdf(f).then(function(t){ok({name:f.name,type:"text",text:t.slice(0,20000)})},no);return}
+ var r=new FileReader();r.onload=function(){ok({name:f.name,type:"text",text:String(r.result).slice(0,20000)})};r.onerror=no;r.readAsText(f)})}
+function runJs(code){return new Promise(function(ok,no){
+ var w=new Worker(URL.createObjectURL(new Blob(['onmessage=function(e){var L=[];console.log=function(){L.push([].map.call(arguments,function(a){return typeof a==="object"?JSON.stringify(a):String(a)}).join(" "))};try{var r=(0,eval)(e.data);if(r!==undefined)L.push(String(r));postMessage({text:L.join("\\n")})}catch(x){postMessage({err:String(x)})}}'])));
+ var tm=setTimeout(function(){w.terminate();no(new Error("Zaman aşımı (5 sn)"))},5000);
+ w.onmessage=function(e){clearTimeout(tm);w.terminate();e.data.err?no(new Error(e.data.err)):ok(e.data)};w.postMessage(code)})}
+var pyo=null;
+async function runPy(code){
+ if(!pyo){if(!window.loadPyodide)await new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js";s.onload=ok;s.onerror=no;document.head.appendChild(s)});pyo=await loadPyodide()}
+ var L=[];pyo.setStdout({batched:function(x){L.push(x)}});pyo.setStderr({batched:function(x){L.push(x)}});
+ await pyo.loadPackagesFromImports(code);
+ var plot=/matplotlib/.test(code);if(plot)pyo.runPython("import matplotlib\nmatplotlib.use('agg')");
+ var r=await pyo.runPythonAsync(code);if(r!==undefined&&r!==null)L.push(String(r));
+ var imgs=plot?pyo.runPython("import io,base64\nimport matplotlib.pyplot as plt\n_o=[]\nfor n in plt.get_fignums():\n    b=io.BytesIO();plt.figure(n).savefig(b,format='png',dpi=110,bbox_inches='tight');_o.append(base64.b64encode(b.getvalue()).decode())\nplt.close('all')\n_o").toJs():[];
+ return {text:L.join("\n"),imgs:imgs}}
+async function runCode(btn){
+ var box=btn.closest(".codebox"),lang=box.querySelector(".top span").textContent.toLowerCase(),code=box.querySelector("code").textContent,out=box.nextElementSibling;
+ if(!out||!out.classList.contains("runout")){out=document.createElement("div");out.className="runout";box.after(out)}
+ var js=/^(js|javascript)$/.test(lang);out.innerHTML="<pre>Çalışıyor…"+(js||pyo?"":" (Python ortamı ilk seferde yüklenir, biraz sürebilir)")+"</pre>";btn.disabled=true;
+ try{var res=js?await runJs(code):await runPy(code);out.innerHTML="<pre>"+esc(res.text||"(çıktı yok)")+"</pre>"+(res.imgs||[]).map(function(b){return '<img alt="Grafik" src="data:image/png;base64,'+b+'">'}).join("")}
+ catch(e){out.innerHTML='<pre class="err">'+esc(String(e&&e.message||e))+"</pre>"}
+ btn.disabled=false}
+async function api(url,body){
+ var img=url==="/api/image",r;
+ if(img)body={messages:[{role:"user",content:"Aşağıdaki isteğe uygun, renkli ve özenli bir vektör resim çiz. SADECE tam bir <svg> kodu döndür (viewBox=\"0 0 800 600\", xmlns dahil). Açıklama ya da markdown yazma. Resmin içine yazı koyma.\nİstek: "+body.prompt}]};
+ try{r=await fetch((window.CORTEX_API||"").replace(/\/$/,"")+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:body.messages,images:body.images||[],system:img?"Sen bir SVG çizim motorusun.":sysPrompt(),svg:img})})}catch(x){throw {code:location.protocol==="file:"?"file":"net"}}
+ var j={};try{j=await r.json()}catch(e){}
+ if(!r.ok)throw {code:r.status===429?"rate_limited":"srv",message:j.error||("HTTP "+r.status)};
+ return img?{svg:j.text}:{text:j.text}}
+function save(){store.set("cortex-chats",JSON.stringify(chats.slice(0,40)))}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function inline(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>").replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>")}
+function md(t){
+ var out="",parts=t.split(/```/);
+ parts.forEach(function(p,i){
+  if(i%2){var nl=p.indexOf("\n"),lang=nl>-1?p.slice(0,nl).trim():"",code=nl>-1?p.slice(nl+1):p;
+   out+='<div class="codebox"><div class="top"><span>'+esc(lang||"kod")+'</span><span>'+(/^(python|py|js|javascript)$/i.test(lang)?'<button data-run>Çalıştır</button>':'')+'<button data-copy>Kopyala</button></span></div><pre><code>'+esc(code.replace(/\n$/,""))+'</code></pre></div>';return}
+  var lines=p.split("\n"),list=null,buf=[];
+  function flush(){if(buf.length){out+="<p>"+buf.join("<br>")+"</p>";buf=[]}if(list){out+="</"+list+">";list=null}}
+  lines.forEach(function(l){var m;
+   if(!l.trim()){flush();return}
+   if(m=l.match(/^#{1,3}\s+(.*)/)){flush();out+="<h3>"+inline(m[1])+"</h3>";return}
+   if(m=l.match(/^\s*([-*•])\s+(.*)/)){if(buf.length){out+="<p>"+buf.join("<br>")+"</p>";buf=[]}if(list!=="ul"){if(list)out+="</"+list+">";out+="<ul>";list="ul"}out+="<li>"+inline(m[2])+"</li>";return}
+   if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(buf.length){out+="<p>"+buf.join("<br>")+"</p>";buf=[]}if(list!=="ol"){if(list)out+="</"+list+">";out+="<ol>";list="ol"}out+="<li>"+inline(m[1])+"</li>";return}
+   if(list){out+="</"+list+">";list=null}
+   buf.push(inline(l))});
+  flush()});
+ return out}
+function svgUri(s){return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s)}
+function bodyHtml(m){
+ if(m.pending&&!m.t)return '<div class="dots" aria-label="Yazıyor"><i></i><i></i><i></i></div>';
+ if(m.svg||m.png)return '<div class="imgcard"><img alt="Oluşturulan resim" src="'+(m.png||svgUri(m.svg))+'"><div class="bar"><button data-dl>Resmi indir</button></div></div>'+(m.t?'<div style="margin-top:8px">'+md(m.t)+"</div>":"");
+ return m.err?'<p class="err">'+esc(m.t)+"</p>":md(m.t)}
+function render(){
+ var c=chats.find(function(x){return x.id===cur}),col=$("col");
+ if(!c||!c.msgs.length){
+  col.innerHTML='<div class="hero"><svg><use href="#logo"/></svg><h1>Cortex AI</h1><p>Soru sor, kod yazdır ya da hayalindeki resmi tarif et.</p><div class="chips">'+SUG.map(function(s){return '<button data-s="'+esc(s)+'">'+esc(s)+"</button>"}).join("")+"</div></div>"}
+ else col.innerHTML=c.msgs.map(function(m,i){
+  return m.r==="u"?'<div class="msg u"><div class="b">'+esc(m.t)+(m.f&&m.f.length?"\n📎 "+esc(m.f.join(", ")):"")+"</div></div>":'<div class="msg a" data-i="'+i+'"><div class="av"><svg><use href="#logo"/></svg></div><div class="b">'+bodyHtml(m)+"</div></div>"}).join("");
+ var f=$("feed");f.scrollTop=f.scrollHeight;
+ var h=$("hist");h.innerHTML=chats.length?"<h4>Son sohbetler</h4>":"";
+ chats.forEach(function(x){
+  var row=document.createElement("div");row.className="hrow"+(x.id===cur?" on":"");
+  var b=document.createElement("button");b.className="t";b.textContent=x.title;b.onclick=function(){cur=x.id;render();closeSide()};
+  var d=document.createElement("button");d.className="x";d.textContent="✕";d.setAttribute("aria-label","Sohbeti sil");
+  var armed=false,tm;
+  d.onclick=function(e){e.stopPropagation();
+   if(!armed){armed=true;d.textContent="Sil?";d.classList.add("arm");tm=setTimeout(function(){armed=false;d.textContent="✕";d.classList.remove("arm")},2500);return}
+   clearTimeout(tm);chats=chats.filter(function(y){return y.id!==x.id});if(cur===x.id)cur=null;save();render()};
+  row.appendChild(b);row.appendChild(d);h.appendChild(row)})}
+function closeSide(){document.body.classList.remove("open")}
+function newChat(){cur=null;render();closeSide();$("inp").focus()}
+function setMode(m){mode=m;$("mChat").setAttribute("aria-pressed",m==="chat");$("mImg").setAttribute("aria-pressed",m==="img");$("inp").placeholder=m==="img"?"Nasıl bir resim istiyorsun?":"Cortex AI’ye bir şey sor…"}
+function sync(){var i=$("inp");i.style.height="auto";i.style.height=Math.min(i.scrollHeight,180)+"px";$("sendBtn").disabled=busy||!i.value.trim()}
+function extractSvg(t){var m=t.match(/<svg[\s\S]*?<\/svg>/i);if(!m)return null;var s=m[0].replace(/<script[\s\S]*?<\/script>/gi,"").replace(/\son\w+="[^"]*"/gi,"");if(!/xmlns=/.test(s))s=s.replace("<svg",'<svg xmlns="http://www.w3.org/2000/svg"');return s}
+async function send(text){
+ text=(text||$("inp").value).trim();if(!text||busy)return;
+ var c=chats.find(function(x){return x.id===cur});
+ if(!c){c={id:String(Date.now()),title:text.slice(0,40),msgs:[]};chats.unshift(c);cur=c.id}
+ var asImg=mode==="img";
+ var mm=text.match(/^\/?hatırla[:\s]+(.+)/i);if(mm)addMem(mm[1]);
+ var myAtts=atts.slice();atts=[];renderAtts();
+ c.msgs.push({r:"u",t:text,f:myAtts.map(function(a){return a.name})});
+ var am={r:"a",t:"",pending:true};c.msgs.push(am);
+ $("inp").value="";busy=true;sync();render();
+ try{
+  var hist=[];
+  c.msgs.slice(0,-1).filter(function(m){return !m.err}).slice(-12).forEach(function(m){var role=m.r==="u"?"user":"assistant",content=(m.svg||m.png)?"[Resim oluşturuldu]":m.t;if(hist.length&&hist[hist.length-1].role===role)hist[hist.length-1].content+="\n\n"+content;else hist.push({role:role,content:content})});
+  while(hist.length&&hist[0].role!=="user")hist.shift();
+  var extra="",imgs=[];
+  myAtts.forEach(function(a){if(a.type==="text")extra+="\n\n[Dosya: "+a.name+"]\n"+a.text;else imgs.push({mime:a.mime,b64:a.b64})});
+  if(!asImg)extra+=await gatherWeb(text,webOn);
+  if(extra&&hist.length)hist[hist.length-1].content+=extra;
+  if(asImg){
+   var r=await api("/api/image",{prompt:text});
+   if(r.png)am.png=r.png;else{var s=extractSvg(r.svg||"");if(!s)throw {code:"badsvg"};am.svg=s}
+   am.t="";
+  }else{
+   var r=await api("/api/chat",{messages:hist,images:imgs});am.t=r.text;
+  }
+  am.pending=false;
+ }catch(e){
+  am.pending=false;am.err=true;
+  am.t=e&&e.code==="not_granted"?"İzin verilmedi. Yanıt almak için Cortex AI’nin Claude erişimine izin vermelisin."
+   :e&&e.code==="rate_limited"?"Çok hızlı istek gönderdin. Biraz bekleyip tekrar dene."
+   :e&&e.code==="novision"?"Tarayıcı modu görsel okuyamaz. Görsel için Claude, Gemini ya da Groq seç."
+   :e&&e.code==="nogpu"?"Bu tarayıcı WebGPU desteklemiyor. Bilgisayarda güncel Chrome ya da Edge kullan (telefonda her cihaz desteklemez)."
+   :e&&e.code==="nokey"?"Önce API anahtarını gir (sol menüde “API anahtarı”)."
+   :e&&e.code==="badkey"?"Servis anahtarı reddetti: "+e.message+" Sol menüden “API anahtarı”nı yeniden gir.":e&&e.code==="file"?"Dosyayı çift tıklayarak açtın, bu yüzden sunucuya ulaşamıyor. Sunucu adresinden aç (örn. https://…onrender.com)."
+   :e&&e.code==="net"?"Sunucuya ulaşılamadı ("+(window.CORTEX_API||location.origin)+"). Sunucu uyanıyor olabilir, 1 dakika bekleyip tekrar dene."
+   :e&&e.code==="badsvg"?"Resim oluşturulamadı. İsteği biraz daha ayrıntılı yazıp tekrar dene."
+   :"Bir hata oluştu ("+((e&&(e.message||e.code))||String(e))+"). Tekrar dene.";
+ }
+ busy=false;save();render();sync()}
+$("col").addEventListener("click",function(e){
+ var t=e.target;
+ if(t.hasAttribute("data-run")){runCode(t);return}
+ if(t.dataset.s){send(t.dataset.s);return}
+ if(t.hasAttribute("data-copy")){var code=t.closest(".codebox").querySelector("code").textContent;
+  try{navigator.clipboard.writeText(code).then(function(){t.textContent="Kopyalandı"},function(){t.textContent="Kopyalanamadı"})}catch(x){t.textContent="Kopyalanamadı"}
+  setTimeout(function(){t.textContent="Kopyala"},1500);return}
+ if(t.hasAttribute("data-dl")){var i=+t.closest(".msg").dataset.i,c=chats.find(function(x){return x.id===cur}),m=c&&c.msgs[i];
+  if(m&&(m.svg||m.png)){var a=document.createElement("a");a.href=m.png||svgUri(m.svg);a.download=m.png?"cortex-resim.png":"cortex-resim.svg";document.body.appendChild(a);a.click();a.remove()}}
+});
+$("sendBtn").onclick=function(){send()};
+$("inp").addEventListener("input",sync);
+$("inp").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();send()}});
+$("newBtn").onclick=newChat;
+$("menuBtn").onclick=function(){document.body.classList.add("open")};
+$("scrim").onclick=closeSide;
+$("mChat").onclick=function(){setMode("chat")};
+$("mImg").onclick=function(){setMode("img")};
+$("themeBtn").onclick=function(){var d=document.documentElement,dark=d.dataset.theme?d.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;d.dataset.theme=dark?"light":"dark";store.set("cortex-theme",d.dataset.theme)};
+(function(){var t=store.get("cortex-theme");if(t)document.documentElement.dataset.theme=t})();
+render();sync();
+$("personaSel").innerHTML=Object.keys(PERS).concat(["Özel rol"]).map(function(k){return "<option>"+k+"</option>"}).join("");$("personaSel").value=persona;
+$("personaSel").onchange=function(){persona=this.value;if(persona==="Özel rol"){var t=prompt("Kendi rolünü yaz (örn. Sert ama adil bir iş görüşmesi koçu)",store.get("cortex-custom")||"");if(t!==null)store.set("cortex-custom",t)}store.set("cortex-persona",persona)};
+$("webBtn").onclick=function(){webOn=!webOn;this.setAttribute("aria-pressed",webOn)};
+$("attBtn").onclick=function(){$("fileInp").click()};
+$("fileInp").onchange=async function(){var fs=Array.from(this.files);this.value="";for(var i=0;i<fs.length;i++){try{atts.push(await readFile(fs[i]))}catch(e){alert(fs[i].name+" okunamadı")}}renderAtts();sync()};
+$("atts").addEventListener("click",function(e){var i=e.target.dataset.rm;if(i!==undefined){atts.splice(+i,1);renderAtts()}});
+$("memBtn").onclick=function(){renderMem();$("memModal").hidden=false};
+$("memClose").onclick=function(){$("memModal").hidden=true};
+$("memInp").addEventListener("keydown",function(e){if(e.key==="Enter"){addMem(this.value);this.value="";renderMem()}});
+$("memList").addEventListener("click",function(e){var i=e.target.dataset.m;if(i!==undefined){var m=mems();m.splice(+i,1);store.set("cortex-mem",JSON.stringify(m));memLabel();renderMem()}});
+memLabel();
+</script>
+</body>
+</html>
